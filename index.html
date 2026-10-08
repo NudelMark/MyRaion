@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мой район — Белгород</title>
+<meta name="description" content="Мой район — всё, что происходит рядом с тобой, в одном месте. Цифровой городской сервис Белгорода.">
+<link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+<link rel="stylesheet" href="styles.css">
+<script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script defer src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+</head>
+<body>
+
+<!-- ===================== SVG-SPRITE ===================== -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="i-logo" viewBox="0 0 24 24">
+        <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M9.5 21v-5.5h5V21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <circle cx="12" cy="10.6" r="1.7" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24">
+        <path d="M6.5 10a5.5 5.5 0 0 1 11 0c0 4 1.5 5.5 1.5 5.5H5S6.5 14 6.5 10Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M10 18.5a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24">
+        <path d="M12 21s6.5-6.1 6.5-11a6.5 6.5 0 1 0-13 0C5.5 14.9 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <circle cx="12" cy="10" r="2.4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    </symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24">
+        <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-close" viewBox="0 0 24 24">
+        <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-home" viewBox="0 0 24 24">
+        <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M9.5 21v-5.5h5V21" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    </symbol>
+    <symbol id="i-map" viewBox="0 0 24 24">
+        <path d="m3 6.5 6-2.5 6 2.5 6-2.5v13l-6 2.5-6-2.5-6 2.5v-13Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M9 4v13M15 6.5v13" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    </symbol>
+    <symbol id="i-crane" viewBox="0 0 24 24">
+        <path d="M4 21h9M7.5 21V6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M3 6h13l-4.5-3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M12.5 6v4.5M10.5 10.5h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <rect x="10.4" y="12" width="4.2" height="4" rx="0.6" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    </symbol>
+    <symbol id="i-future" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-idea" viewBox="0 0 24 24">
+        <path d="M9 17.5h6M10 20.5h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M12 3.5a5.5 5.5 0 0 0-3.3 9.9c.7.5 1.1 1.3 1.1 2.1h4.4c0-.8.4-1.6 1.1-2.1A5.5 5.5 0 0 0 12 3.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24">
+        <rect x="3.5" y="5.5" width="17" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <path d="M3.5 10h17M8 3.5v4M16 3.5v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-groups" viewBox="0 0 24 24">
+        <circle cx="9" cy="9" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <path d="M3.5 19.5c.6-3 2.8-4.7 5.5-4.7s4.9 1.7 5.5 4.7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M16 6.4a3.2 3.2 0 0 1 0 5.2M17.6 15.3c2 .7 3.2 2.2 3.6 4.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24">
+        <rect x="4" y="4" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <rect x="13" y="4" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <rect x="4" y="13" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <rect x="13" y="13" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    </symbol>
+    <symbol id="i-user" viewBox="0 0 24 24">
+        <circle cx="12" cy="8.5" r="3.7" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <path d="M4.8 20c.9-3.6 3.8-5.6 7.2-5.6s6.3 2 7.2 5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24">
+        <path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24">
+        <path d="m9 5.5 6.5 6.5L9 18.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24">
+        <path d="M19 12H5M10.5 6.5 5 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-route" viewBox="0 0 24 24">
+        <circle cx="6" cy="18" r="2.4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <circle cx="18" cy="6" r="2.4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <path d="M8.4 18h5.1a3.5 3.5 0 0 0 0-7H10a3.5 3.5 0 0 1 0-7h5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-star" viewBox="0 0 24 24">
+        <path d="m12 4 2.4 5 5.6.7-4.1 3.8 1.1 5.5-5-2.7-5 2.7 1.1-5.5L4 9.7 9.6 9 12 4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-zoom-in" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M11 8.5v5M8.5 11h5M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-zoom-out" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M8.5 11h5M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-locate" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-school" viewBox="0 0 24 24">
+        <path d="M12 3.5 21 8l-9 4.5L3 8l9-4.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M6.5 10v5.5c0 1.4 2.5 3 5.5 3s5.5-1.6 5.5-3V10" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    </symbol>
+    <symbol id="i-hospital" viewBox="0 0 24 24">
+        <rect x="4.5" y="4.5" width="15" height="15" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <path d="M12 8.5v7M8.5 12h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-sport" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <path d="M12 3.8c2.5 2.3 3.8 5.2 3.8 8.2s-1.3 5.9-3.8 8.2M12 3.8c-2.5 2.3-3.8 5.2-3.8 8.2s1.3 5.9 3.8 8.2M4 12h16" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </symbol>
+    <symbol id="i-culture" viewBox="0 0 24 24">
+        <path d="M4.5 20.5h15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M6 18V9.5M10 18V9.5M14 18V9.5M18 18V9.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M3.5 9.5h17L12 4 3.5 9.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-park" viewBox="0 0 24 24">
+        <path d="M12 3.5 6.5 12h3L6 17h12l-3.5-5h3L12 3.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M12 17v3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-factory" viewBox="0 0 24 24">
+        <path d="M3.5 20.5V10l5.5 3.5V10l5.5 3.5V6.5h2l1 14h-14Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M18 6.5V3.5h-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-event" viewBox="0 0 24 24">
+        <path d="M4 6.5h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-10Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M4 10.5h16M8.5 4v4M15.5 4v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="m10 14 4 1.8-4 1.7v-3.5Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-vote" viewBox="0 0 24 24">
+        <rect x="4" y="4" width="16" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24">
+        <path d="M9 17.5h6M10 20.5h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M12 3.5a5.5 5.5 0 0 0-3.3 9.9c.7.5 1.1 1.3 1.1 2.1h4.4c0-.8.4-1.6 1.1-2.1A5.5 5.5 0 0 0 12 3.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24">
+        <path d="M19.5 4.5c0 8-4.5 13-11 13H5.5c0-8 4.5-13 11-13h3Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M5 20c2.5-5 6-8.5 10.5-11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-road" viewBox="0 0 24 24">
+        <path d="M7 21 9.5 3M17 21 14.5 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M12 4.5v3M12 10.5v3M12 16.5v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-book" viewBox="0 0 24 24">
+        <path d="M4.5 5.5A2 2 0 0 1 6.5 3.5H11a2 2 0 0 1 2 2v15a2 2 0 0 0-2-2H6.5a2 2 0 0 1-2-2v-13Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M19.5 5.5a2 2 0 0 0-2-2H14v17a2 2 0 0 1 2-2h3.5a2 2 0 0 0 2-2v-13Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24">
+        <path d="M4 8.5h3l1.5-2.5h7L17 8.5h3a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18v-8A1.5 1.5 0 0 1 4 8.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <circle cx="12" cy="13.5" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    </symbol>
+    <symbol id="i-bus" viewBox="0 0 24 24">
+        <rect x="4.5" y="3.5" width="15" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <path d="M4.5 11h15M8 17.5v2M16 17.5v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <circle cx="8.5" cy="14.3" r="1" fill="currentColor"/><circle cx="15.5" cy="14.3" r="1" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24">
+        <path d="M6 3.5h8l4 4v13H6v-17Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M14 3.5v4h4M9 12h6M9 15.5h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-message" viewBox="0 0 24 24">
+        <path d="M4 5.5h16v11H9l-5 4v-15Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-share" viewBox="0 0 24 24">
+        <circle cx="6" cy="12" r="2.4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <circle cx="18" cy="6" r="2.4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <circle cx="18" cy="18" r="2.4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <path d="m8.2 10.9 7.6-3.8M8.2 13.1l7.6 3.8" stroke="currentColor" stroke-width="1.7"/>
+    </symbol>
+</svg>
+
+<a class="skip-link" href="#content">Перейти к содержимому</a>
+
+<!-- ===================== SIDEBAR ===================== -->
+<aside class="sidebar" id="sidebar" aria-label="Основная навигация">
+    <div class="sidebar__head">
+        <a class="logo" href="#" data-nav="home" aria-label="Мой район — на главную">
+            <span class="logo__mark"><svg class="ico" aria-hidden="true"><use href="#i-logo"/></svg></span>
+            <span class="logo__text">
+                <b>Мой район</b>
+                <small>Белгород</small>
+            </span>
+        </a>
+        <button class="sidebar__close icon-btn" id="sidebarClose" aria-label="Закрыть меню">
+            <svg class="ico" aria-hidden="true"><use href="#i-close"/></svg>
+        </button>
+    </div>
+
+    <nav class="nav" id="mainNav">
+        <button class="nav__item is-active" data-nav="home">
+            <svg class="ico" aria-hidden="true"><use href="#i-home"/></svg><span>Главная</span>
+        </button>
+        <button class="nav__item" data-nav="map">
+            <svg class="ico" aria-hidden="true"><use href="#i-map"/></svg><span>Карта</span>
+        </button>
+        <button class="nav__item" data-nav="build">
+            <svg class="ico" aria-hidden="true"><use href="#i-crane"/></svg><span>Строится</span>
+        </button>
+        <button class="nav__item" data-nav="future">
+            <svg class="ico" aria-hidden="true"><use href="#i-future"/></svg><span>Будущее</span>
+        </button>
+        <button class="nav__item" data-nav="together">
+            <svg class="ico" aria-hidden="true"><use href="#i-idea"/></svg><span>Решаем вместе</span>
+        </button>
+        <button class="nav__item" data-nav="afisha">
+            <svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg><span>Афиша</span>
+        </button>
+        <button class="nav__item" data-nav="clubs">
+            <svg class="ico" aria-hidden="true"><use href="#i-groups"/></svg><span>Кружки и секции</span>
+        </button>
+        <button class="nav__item" data-nav="services">
+            <svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg><span>Сервисы</span>
+        </button>
+    </nav>
+
+    <div class="sidebar__foot">
+        <button class="nav__item nav__item--profile" data-nav="profile">
+            <svg class="ico" aria-hidden="true"><use href="#i-user"/></svg><span>Мой профиль</span>
+        </button>
+        <p class="sidebar__slogan">Мой район — город рядом.</p>
+    </div>
+</aside>
+<div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
+
+<!-- ===================== APP ===================== -->
+<div class="app">
+
+    <header class="topbar">
+        <button class="icon-btn topbar__menu" id="menuBtn" aria-label="Открыть меню">
+            <svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg>
+        </button>
+
+        <div class="search" role="search">
+            <svg class="ico search__ico" aria-hidden="true"><use href="#i-search"/></svg>
+            <input type="search" id="searchInput" class="search__input"
+                   placeholder="Найти место, услугу, проект или событие"
+                   autocomplete="off" aria-label="Поиск по городу"
+                   aria-expanded="false" aria-controls="searchResults">
+            <div class="search__results" id="searchResults" role="listbox" hidden></div>
+        </div>
+
+        <div class="topbar__right">
+            <button class="district-chip" id="districtBtn" aria-label="Текущий район">
+                <svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>
+                <span id="districtLabel">Белгород</span>
+            </button>
+            <button class="icon-btn bell" id="bellBtn" aria-label="Уведомления">
+                <svg class="ico" aria-hidden="true"><use href="#i-bell"/></svg>
+                <span class="bell__badge" id="bellBadge" hidden>0</span>
+            </button>
+            <button class="avatar" id="avatarBtn" aria-label="Профиль: Жаркова Лора">ЖЛ</button>
+        </div>
+    </header>
+
+    <main id="content" class="content">
+
+        <!-- ============ HOME ============ -->
+        <section class="section is-active" id="section-home" data-section="home" aria-label="Главная">
+            <div class="home-hero">
+                <div class="home-hero__intro">
+                    <h1 class="home-hero__title">Белгород рядом</h1>
+                    <p class="home-hero__sub">Всё, что происходит рядом с тобой, в одном месте.</p>
+                </div>
+                <div class="map-host" id="mapHostHome"></div>
+            </div>
+
+            <div class="feed">
+                <div class="feed__row">
+                    <section class="block block--nearby">
+                        <header class="block__head">
+                            <h2>Что происходит рядом</h2>
+                            <button class="link-btn" data-nav="map">Открыть карту<svg class="ico" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+                        </header>
+                        <div class="cards-row" id="nearbyRow"></div>
+                    </section>
+
+                    <section class="block block--vote">
+                        <header class="block__head"><h2>Голосуем вместе</h2></header>
+                        <div id="homeVote"></div>
+                    </section>
+                </div>
+
+                <section class="block">
+                    <header class="block__head">
+                        <h2>Строится сейчас</h2>
+                        <button class="link-btn" data-nav="build">Все проекты<svg class="ico" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+                    </header>
+                    <div class="cards-row" id="homeBuildRow"></div>
+                </section>
+
+                <section class="block">
+                    <header class="block__head">
+                        <h2>Афиша</h2>
+                        <button class="link-btn" data-nav="afisha">Все события<svg class="ico" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+                    </header>
+                    <div class="cards-row" id="homeAfishaRow"></div>
+                </section>
+            </div>
+        </section>
+
+        <!-- ============ MAP ============ -->
+        <section class="section" id="section-map" data-section="map" aria-label="Карта">
+            <div class="map-page">
+                <aside class="map-page__list">
+                    <header class="map-page__head">
+                        <h2>Белгород на карте</h2>
+                        <p class="muted" id="mapListCount">Объекты поблизости</p>
+                    </header>
+                    <div class="map-page__items" id="mapListItems"></div>
+                </aside>
+                <div class="map-host map-host--page" id="mapHostPage"></div>
+            </div>
+        </section>
+
+        <!-- ============ BUILD ============ -->
+        <section class="section" id="section-build" data-section="build" aria-label="Строится">
+            <div class="section__wrap" id="buildView">
+                <header class="section__head">
+                    <h1>Строится сейчас</h1>
+                    <p class="section__sub">Что меняется в Белгороде прямо сейчас.</p>
+                </header>
+                <div class="chips" id="buildFilters" role="tablist" aria-label="Фильтр строек"></div>
+                <div class="grid" id="buildGrid"></div>
+            </div>
+            <div class="section__wrap" id="buildDetail" hidden></div>
+        </section>
+
+        <!-- ============ FUTURE ============ -->
+        <section class="section" id="section-future" data-section="future" aria-label="Будущее">
+            <div class="section__wrap" id="futureView">
+                <header class="section__head">
+                    <h1>Белгород будущего</h1>
+                    <p class="section__sub">Каким станет наш город в ближайшие годы.</p>
+                </header>
+                <div class="timeline" id="futureTimeline" role="tablist" aria-label="Годы"></div>
+                <div class="chips" id="futureFilters" role="tablist" aria-label="Статусы"></div>
+                <div class="grid" id="futureGrid"></div>
+            </div>
+            <div class="section__wrap" id="futureDetail" hidden></div>
+        </section>
+
+        <!-- ============ TOGETHER ============ -->
+        <section class="section" id="section-together" data-section="together" aria-label="Решаем вместе">
+            <div class="section__wrap">
+                <header class="section__head section__head--row">
+                    <div>
+                        <h1>Решаем вместе</h1>
+                        <p class="section__sub">Предложите, чего не хватает вашему району.</p>
+                    </div>
+                    <button class="btn btn--accent" id="newProposalBtn">
+                        <svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Предложить изменение
+                    </button>
+                </header>
+
+                <div id="voteBlock"></div>
+
+                <div class="chips" id="proposalFilters" role="tablist" aria-label="Статусы предложений"></div>
+                <div class="grid" id="proposalGrid"></div>
+            </div>
+        </section>
+
+        <!-- ============ AFISHA ============ -->
+        <section class="section" id="section-afisha" data-section="afisha" aria-label="Афиша">
+            <div class="section__wrap">
+                <header class="section__head">
+                    <h1>Афиша Белгорода</h1>
+                    <p class="section__sub">Что стоит посетить в ближайшее время.</p>
+                </header>
+                <div class="chips" id="eventTimeFilters" role="tablist" aria-label="Когда"></div>
+                <div class="chips" id="eventCatFilters" role="tablist" aria-label="Категории"></div>
+                <div class="grid" id="eventsGrid"></div>
+                <div class="empty" id="eventsEmpty" hidden>
+                    <p>Нет мероприятий по выбранным фильтрам.</p>
+                    <button class="btn btn--ghost" id="eventsReset">Сбросить фильтры</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ CLUBS ============ -->
+        <section class="section" id="section-clubs" data-section="clubs" aria-label="Кружки и секции">
+            <div class="section__wrap">
+                <header class="section__head">
+                    <h1>Кружки и секции</h1>
+                    <p class="section__sub">Найдите занятие рядом с домом.</p>
+                </header>
+                <div class="chips" id="clubFilters" role="tablist" aria-label="Категории"></div>
+                <div class="grid" id="clubsGrid"></div>
+            </div>
+        </section>
+
+        <!-- ============ SERVICES ============ -->
+        <section class="section" id="section-services" data-section="services" aria-label="Сервисы">
+            <div class="section__wrap">
+                <header class="section__head">
+                    <h1>Городские сервисы</h1>
+                    <p class="section__sub">Просто выберите, что вам нужно сделать.</p>
+                </header>
+                <div class="grid grid--services" id="servicesGrid"></div>
+            </div>
+        </section>
+
+        <!-- ============ PROFILE ============ -->
+        <section class="section" id="section-profile" data-section="profile" aria-label="Мой профиль">
+            <div class="section__wrap">
+                <header class="section__head">
+                    <h1>Мой профиль</h1>
+                    <p class="section__sub">Всё важное о вашем районе — в одном месте.</p>
+                </header>
+
+                <div class="profile-identity">
+                    <div class="profile-identity__avatar" aria-hidden="true">ЖЛ</div>
+                    <div>
+                        <p class="profile-identity__eyebrow">Профиль жителя</p>
+                        <h2 id="profileName">Жаркова Лора</h2>
+                        <p class="profile-identity__location">
+                            <svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>
+                            <span id="profileDistrict">Болховец</span><span aria-hidden="true">·</span>Белгород
+                        </p>
+                    </div>
+                </div>
+
+                <div class="profile__district">
+                    <span class="label">Выберите район</span>
+                    <div class="chips" id="districtChips" role="tablist" aria-label="Выбор района"></div>
+                </div>
+
+                <div class="profile__grid">
+                    <section class="panel">
+                        <header class="panel__head"><h2>Рядом со мной</h2></header>
+                        <div id="profileNearby" class="panel__body"></div>
+                    </section>
+                    <section class="panel">
+                        <header class="panel__head"><h2>Сохранённые места</h2></header>
+                        <div id="profileSaved" class="panel__body"></div>
+                    </section>
+                    <section class="panel">
+                        <header class="panel__head"><h2>Мои предложения</h2></header>
+                        <div id="profileProposals" class="panel__body"></div>
+                    </section>
+                    <section class="panel">
+                        <header class="panel__head"><h2>Мои голосования</h2></header>
+                        <div id="profileVotes" class="panel__body"></div>
+                    </section>
+                    <section class="panel">
+                        <header class="panel__head"><h2>Мои мероприятия</h2></header>
+                        <div id="profileEvents" class="panel__body"></div>
+                    </section>
+                    <section class="panel">
+                        <header class="panel__head"><h2>Уведомления</h2></header>
+                        <div id="profileNotifications" class="panel__body"></div>
+                    </section>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ===================== NOTIFICATIONS PANEL ===================== -->
+<div class="notif-panel" id="notifPanel" role="dialog" aria-label="Уведомления" hidden>
+    <header class="notif-panel__head">
+        <h2>Уведомления</h2>
+        <button class="link-btn" id="notifReadAll">Прочитать все</button>
+    </header>
+    <div class="notif-panel__list" id="notifList"></div>
+</div>
+
+<!-- ===================== MOBILE ===================== -->
+<nav class="bottom-nav" id="bottomNav" aria-label="Мобильная навигация">
+    <button class="bottom-nav__item is-active" data-nav="home">
+        <svg class="ico" aria-hidden="true"><use href="#i-home"/></svg><span>Главная</span>
+    </button>
+    <button class="bottom-nav__item" data-nav="map">
+        <svg class="ico" aria-hidden="true"><use href="#i-map"/></svg><span>Карта</span>
+    </button>
+    <button class="bottom-nav__item" data-nav="together">
+        <svg class="ico" aria-hidden="true"><use href="#i-idea"/></svg><span>Решаем</span>
+    </button>
+    <button class="bottom-nav__item" data-nav="afisha">
+        <svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg><span>Афиша</span>
+    </button>
+    <button class="bottom-nav__item" data-nav="profile">
+        <svg class="ico" aria-hidden="true"><use href="#i-user"/></svg><span>Профиль</span>
+    </button>
+</nav>
+
+<button class="fab" id="fabProposal" aria-label="Предложить изменение">
+    <svg class="ico" aria-hidden="true"><use href="#i-idea"/></svg><span>Предложить</span>
+</button>
+
+<!-- ===================== MODAL / TOAST ===================== -->
+<div class="modal-root" id="modalRoot" hidden>
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal" id="modal" role="dialog" aria-modal="true"></div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script defer src="script.js"></script>
+</body>
+</html>

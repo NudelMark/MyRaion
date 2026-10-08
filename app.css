@@ -1,0 +1,310 @@
+/* app.css - Tailwind v4 CSS-first configuration */
+@import "tailwindcss";
+
+/* Define blue theme with @theme */
+@theme {
+  /* Blue color palette using OKLCH for better perception */
+  --color-background: oklch(100% 0 0);
+  --color-foreground: oklch(15% 0.02 250);
+
+  --color-primary: oklch(45% 0.15 250);
+  --color-primary-foreground: oklch(98% 0.01 250);
+  --color-primary-hover: oklch(38% 0.18 250);
+
+  --color-secondary: oklch(96% 0.01 250);
+  --color-secondary-foreground: oklch(20% 0.02 250);
+
+  --color-muted: oklch(96% 0.01 250);
+  --color-muted-foreground: oklch(46% 0.02 250);
+
+  --color-accent: oklch(55% 0.2 250);
+  --color-accent-foreground: oklch(98% 0.01 250);
+  --color-accent-light: oklch(92% 0.03 250);
+
+  --color-success: oklch(55% 0.18 145);
+  --color-success-light: oklch(92% 0.04 145);
+
+  --color-warning: oklch(70% 0.18 85);
+  --color-warning-light: oklch(94% 0.04 85);
+
+  --color-info: oklch(55% 0.15 250);
+  --color-info-light: oklch(92% 0.03 250);
+
+  --color-destructive: oklch(55% 0.22 25);
+  --color-destructive-foreground: oklch(98% 0.01 250);
+
+  --color-border: oklch(91% 0.01 250);
+  --color-border-strong: oklch(85% 0.01 250);
+  --color-ring: oklch(45% 0.15 250);
+
+  --color-card: oklch(100% 0 0);
+  --color-card-foreground: oklch(15% 0.02 250);
+
+  --color-surface: oklch(98% 0.005 250);
+  --color-surface-hover: oklch(96% 0.01 250);
+
+  /* Ring offset for focus states */
+  --color-ring-offset: oklch(100% 0 0);
+
+  /* Radius tokens */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Animation tokens */
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-slide-in: slide-in 0.3s ease-out;
+  --animate-rise: rise 0.3s ease-out both;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slide-in {
+    from {
+      transform: translateY(-0.5rem);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Sidebar width */
+  --sidebar-w: 256px;
+  --topbar-h: 64px;
+}
+
+/* Dark mode variant */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Dark mode theme overrides */
+.dark {
+  --color-background: oklch(15% 0.02 250);
+  --color-foreground: oklch(98% 0.01 250);
+
+  --color-primary: oklch(65% 0.18 250);
+  --color-primary-foreground: oklch(15% 0.02 250);
+
+  --color-secondary: oklch(22% 0.02 250);
+  --color-secondary-foreground: oklch(98% 0.01 250);
+
+  --color-muted: oklch(22% 0.02 250);
+  --color-muted-foreground: oklch(65% 0.02 250);
+
+  --color-accent: oklch(55% 0.2 250);
+  --color-accent-foreground: oklch(98% 0.01 250);
+
+  --color-border: oklch(22% 0.02 250);
+  --color-ring: oklch(65% 0.02 250);
+
+  --color-card: oklch(18% 0.02 250);
+  --color-card-foreground: oklch(98% 0.01 250);
+
+  --color-surface: oklch(20% 0.02 250);
+  --color-surface-hover: oklch(24% 0.02 250);
+}
+
+/* Base styles */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  }
+}
+
+/* Custom utility classes */
+@layer components {
+  .sidebar {
+    @apply fixed inset-y-0 left-0 z-60 flex flex-col;
+    @apply w-[var(--sidebar-w)] bg-background border-r border-border;
+    @apply px-3.5 py-4;
+  }
+
+  .sidebar.is-open {
+    @apply transform-none shadow-lg;
+  }
+
+  @media (max-width: 960px) {
+    .sidebar {
+      @apply w-68 -translate-x-full shadow-none;
+      @apply transition-transform duration-300 ease-out;
+    }
+  }
+
+  .topbar {
+    @apply sticky top-0 z-40 h-16;
+    @apply flex items-center gap-4 px-6;
+    @apply bg-background/95 backdrop-blur-sm;
+    @apply border-b border-border;
+  }
+
+  .icon-btn {
+    @apply w-10 h-10 rounded-xl;
+    @apply flex items-center justify-center;
+    @apply text-foreground transition-colors duration-180;
+  }
+
+  .icon-btn:hover {
+    @apply bg-surface-hover;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2;
+    @apply h-11 px-5 rounded-xl text-base font-medium;
+    @apply border border-transparent transition-all duration-180;
+  }
+
+  .btn:active {
+    @apply scale-[0.98];
+  }
+
+  .btn--accent {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .btn--accent:hover {
+    @apply bg-primary-hover;
+  }
+
+  .btn--ghost {
+    @apply bg-surface text-foreground border-border;
+  }
+
+  .btn--ghost:hover {
+    @apply bg-surface-hover border-border-strong;
+  }
+
+  .chip {
+    @apply px-4 py-2 rounded-full;
+    @apply bg-background border border-border text-foreground;
+    @apply text-sm whitespace-nowrap transition-all duration-180;
+  }
+
+  .chip:hover {
+    @apply bg-surface-hover;
+  }
+
+  .chip.is-active {
+    @apply bg-primary border-primary text-primary-foreground;
+  }
+
+  .card {
+    @apply bg-background border border-border rounded-xl;
+    @apply flex flex-col overflow-hidden;
+    @apply transition-all duration-180;
+  }
+
+  .card:hover {
+    @apply border-border-strong shadow-sm -translate-y-0.5;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1;
+    @apply rounded-full text-xs font-semibold;
+    @apply bg-surface text-muted-foreground;
+  }
+
+  .section {
+    @apply hidden animate-rise;
+  }
+
+  .section.is-active {
+    @apply block;
+  }
+
+  .modal {
+    @apply relative z-10 w-full max-w-[680px];
+    @apply max-h-[calc(100vh-2.5rem)];
+    @apply bg-card rounded-2xl shadow-lg;
+    @apply flex flex-col overflow-hidden;
+  }
+
+  .toast {
+    @apply flex items-center gap-2.5 px-5 py-3.5;
+    @apply bg-foreground text-background;
+    @apply rounded-xl text-sm shadow-lg;
+    @apply max-w-[min(92vw,480px)];
+  }
+}
+
+/* Skip link */
+.skip-link {
+  @apply fixed -top-16 left-4 z-50;
+  @apply bg-primary text-primary-foreground;
+  @apply px-4 py-2.5 rounded-lg;
+  @apply transition-all duration-180;
+}
+
+.skip-link:focus {
+  @apply top-3;
+}
+
+/* Progress bar */
+.progress__bar {
+  @apply h-full rounded-full;
+  @apply bg-gradient-to-r from-primary to-accent;
+  @apply transition-all duration-500;
+}
+
+/* Map marker */
+.marker {
+  @apply absolute w-8 h-10;
+  @apply transform -translate-x-1/2 -translate-y-full;
+  @apply transition-all duration-180;
+}
+
+.marker::before {
+  content: "";
+  @apply absolute inset-0;
+  @apply bg-current;
+  clip-path: path("M17 41c0 0 15-15.5 15-25A15 15 0 1 0 2 16c0 9.5 15 25 15 25Z");
+}
+
+/* Animations */
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+.skeleton {
+  @apply bg-gradient-to-r from-surface via-surface-hover to-surface;
+  @apply bg-[length:200%_100%];
+  @apply rounded-xl;
+  animation: shimmer 1.2s infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-surface;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-border-strong rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground;
+}
